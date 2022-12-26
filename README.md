@@ -116,9 +116,7 @@ Construct a type with the properties of T except for those in type K.
 
 From T, pick a set of properties whose keys are in the union K
 
-<code>{
- [P in K]: T[P];
- }</code>
+<code>{ [P in K]: T[P]; }</code>
 
 
 #### Exclude
@@ -130,12 +128,6 @@ From T, pick a set of properties whose keys are in the union K
 
 #### TokenEndpointResponse
 
-<code>{
- id_token: string;
- access_token: string;
- refresh_token?: string;
- expires_in: number;
- scope?: string;
- }</code>
+<code>{ id_token: string; access_token: string; refresh_token?: string; expires_in: number; scope?: string; }</code>
 
 </docgen-api>
