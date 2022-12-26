@@ -1,7 +1,7 @@
 import { WebPlugin } from '@capacitor/core';
 
 import type { Auth0CapacitorPlugin } from './definitions';
-import createAuth0Client, { Auth0Client } from '@auth0/auth0-spa-js';
+import { Auth0Client, createAuth0Client, GetTokenSilentlyVerboseResponse } from '@auth0/auth0-spa-js';
 
 export class Auth0CapacitorWeb
   extends WebPlugin
@@ -26,7 +26,7 @@ export class Auth0CapacitorWeb
     
     this.auth0 = createAuth0Client({
       domain: options.domain,
-      client_id: options.clientId
+      clientId: options.clientId
     });
 
     this.domain = options.domain;
@@ -46,9 +46,11 @@ export class Auth0CapacitorWeb
     try {
       const client: Auth0Client = await createAuth0Client({
         domain: clientOptions.domain,
-        client_id: clientOptions.clientId
+        clientId: clientOptions.clientId
       });
+
       const query = window.location.search;
+
       if (query.includes("code=") && query.includes("state=")) {
         // Process the login state
         
@@ -75,37 +77,37 @@ export class Auth0CapacitorWeb
     
   }
 
-  async renew() {
+  async renew(): Promise<GetTokenSilentlyVerboseResponse | undefined> {
     const client = await this.auth0;
     const isAuth = client?.isAuthenticated();
+
     if (isAuth) {
-      return client?.getTokenSilently()
+      return client?.getTokenSilently({ detailedResponse: true });
     } else {
       const query = window.location.search;
+      
       if (query.includes("code=") && query.includes("state=")) {
         // Process the login state
-        return client?.handleRedirectCallback(location.href)
-        .then((result) => {
-          console.log(result);
-          return client?.getTokenSilently();
-        });
-    } else {
+        const redirectResult = client?.handleRedirectCallback(location.href)
+        console.log(redirectResult);
+
+        return client?.getTokenSilently({ detailedResponse: true });
+      } else {
         throw 'not authenticated';
       }
     }
+    
   }
   
   async logout() {
-    (await this.auth0)?.logout({
-      returnTo: window.location.origin
-    });
+    (await this.auth0)?.logout();
   }
 
   async getUser(): Promise<any>{ 
     (await this.auth0)?.getUser();
   }
 
-  async getTokenSilently(): Promise<{ accessToken: string; idToken: string; expiresIn: string, refreshToken: string; }> {
+  async getTokenSilently(): Promise<GetTokenSilentlyVerboseResponse | undefined> {
     return this.renew();
   }
 }

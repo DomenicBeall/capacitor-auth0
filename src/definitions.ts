@@ -1,3 +1,5 @@
+import { GetTokenSilentlyVerboseResponse } from "@auth0/auth0-spa-js";
+
 export interface Auth0CapacitorPlugin {
   createAuth0Client(options: {
     domain: string;
@@ -12,14 +14,14 @@ export interface Auth0CapacitorPlugin {
     audience: string;
     appState?: string;
     redirect_uri?: string
-  }): Promise<{ accessToken: string; idToken: string; expiresIn: string, refreshToken: string; }>;
+  }): Promise<GetTokenSilentlyVerboseResponse>;
   
   logout(): Promise<void>;
 
-  renew(): Promise<{ accessToken: string; idToken: string; expiresIn: string, refreshToken: string; }>;
+  renew(): Promise<GetTokenSilentlyVerboseResponse | undefined>;
 
   getUser(): Promise<{[key:string]:any}>;
 
-  getTokenSilently(): Promise<{ accessToken: string; idToken: string; expiresIn: string, refreshToken: string; }>
+  getTokenSilently(): Promise<GetTokenSilentlyVerboseResponse | undefined>
 }
 
